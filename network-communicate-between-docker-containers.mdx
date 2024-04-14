@@ -1,0 +1,31 @@
+---
+title: "Network and communication between docker containers"
+description: "Make sure the following network is present in both containers."
+tags: ["devops", "docker", "docker-compose"]
+created_at: "2024-03-09"
+updated_at: ""
+---
+
+Make sure the following network is present in both containers 'docker-compose' file:
+
+```yaml
+networks:
+  my_net:
+    name: my_net
+```
+
+Then you can communicate using this format:
+
+`container-name:8080/path/to/resource`
+
+Where `container-name` is the container name and 8080 is the internal docker port, i.e. `external:8080` (external is the one used to access from the local machine).
+
+```yaml
+services:
+  main:
+    container_name: container-name
+```
+
+###### Resolving error/s:
+
+- `dial tcp: lookup container-name on 127.0.0.11:53: no such host`

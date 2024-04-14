@@ -1,0 +1,157 @@
+---
+title: "Responsive ReactJS masonry layout with a clean bottom line"
+description: "CSS Grid to assign columns, with a little JavaScript to stretch the last item in each column."
+tags: ["reactjs", "component", "template", "web-design"]
+created_at: "2023-02-11"
+updated_at: ""
+---
+
+My example uses Tailwind for the CSS Grid styles, if you're not using Tailwind, you could lookup the Tailwind Classes for their CSS rules.
+
+## The masonry component
+
+In a nutshell, this works by checking each item to see if it's the last item in a column, stretching it if it is.
+
+```js
+import { useEffect, useRef } from "react";
+import cx from "classnames";
+
+const Masonry = ({ children, className }) => {
+  const ref = useRef();
+
+  useEffect(() => {
+    if (ref?.current) computeStretch();
+
+    window.addEventListener("resize", computeStretch);
+
+    return () => window.removeEventListener("resize", computeStretch);
+  }, [ref.current?.offsetHeight]);
+
+  function computeStretch() {
+    // Reset height - required before re-computing
+    Array.from(ref.current.children).forEach(
+      (child) => (child.style.height = null)
+    );
+
+    // Compute height - stretch last item in each column
+    Array.from(ref.current.children).forEach((child, i) => {
+      if (
+        ref.current.children[i + 1]?.offsetLeft > child?.offsetLeft ||
+        i === ref.current.children.length - 1
+      )
+        child.style.height = `${
+          ref.current?.offsetHeight - child?.offsetTop
+        }px`;
+    });
+  }
+
+  return (
+    <div ref={ref} className={cx("masonry", className)}>
+      {children}
+    </div>
+  );
+};
+```
+
+## Using the component
+
+```js
+<Masonry className="sm:columns-1 md:columns-2 lg:columns-4 gap-0 -m-2">
+  {children}
+</Masonry>
+```
+
+## Demo
+
+<CustomImage
+  src="https://raw.githubusercontent.com/clintvidler/mdx-articles/main/images/responsive-react-masonry-demo.gif"
+  alt="Profile picture"
+/>
+
+### Before
+
+<CustomImage
+  src="https://raw.githubusercontent.com/clintvidler/mdx-articles/main/images/responsive-react-masonry-demo-before.png"
+  alt="Profile picture"
+/>
+
+### After
+
+<CustomImage
+  src="https://raw.githubusercontent.com/clintvidler/mdx-articles/main/images/responsive-react-masonry-demo-after.png"
+  alt="Profile picture"
+/>
+
+## Some example tiles
+
+Quickly fill in some tiles to serve as an example/starting point.
+
+```js
+const children = [
+  <div
+    key={0}
+    className="break-inside-avoid-column"
+    style={{
+      background: "steelblue",
+    }}
+  >
+    <div
+      style={{
+        height: `200px`,
+      }}
+    ></div>
+  </div>,
+  <div
+    key={1}
+    className="break-inside-avoid-column"
+    style={{
+      background: "firebrick",
+    }}
+  >
+    <div
+      style={{
+        height: `230px`,
+      }}
+    ></div>
+  </div>,
+  <div
+    key={2}
+    className="break-inside-avoid-column"
+    style={{
+      background: "aqua",
+    }}
+  >
+    <div
+      style={{
+        height: `140px`,
+      }}
+    ></div>
+  </div>,
+  <div
+    key={3}
+    className="break-inside-avoid-column"
+    style={{
+      background: "goldenrod",
+    }}
+  >
+    <div
+      style={{
+        height: `120px`,
+      }}
+    ></div>
+  </div>,
+  <div
+    key={4}
+    className="break-inside-avoid-column"
+    style={{
+      background: "rebeccapurple",
+    }}
+  >
+    <div
+      style={{
+        height: `320px`,
+      }}
+    ></div>
+  </div>,
+];
+```

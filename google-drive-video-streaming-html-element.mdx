@@ -1,0 +1,51 @@
+---
+title: "HTML Video Streaming from Google Drive"
+description: "A method for serving HTML5 video on your website via Google Drive, saving bandwidth and reducing server load."
+tags: ["web-design", "utility"]
+created_at: "2019-04-11"
+updated_at: ""
+---
+
+A method for serving HTML5 video on your website via Google Drive, saving bandwidth and reducing server load.
+
+Streaming a video is probably the highest bandwidth activity a visitor will perform on your website. This data usage can add up quickly, and if your web hosting provider tracks and limits monthly bandwidth usage, which most do, it’s very important to find another delivery source. This is where Google Drive comes in.
+
+This method has been tested with all popular web browsers, including Chrome, Firefox, Safari, Internet Explorer and Edge.
+
+## Sharing on Google Drive
+
+It’s important to share the video for public viewing. I created a public folder on my Google Drive, so I can easily track and manage my public files.
+
+To share the video:
+
+1. Select the video
+2. Choose the Share Icon (person with a +)
+3. Choose "Get Link" and ensure anyone with the link to view is selected.
+4. Copy the link (should look something like this https://drive.google.com/file/d/a5b4c5d2e1/view?usp=sharing)
+
+Your video can now be viewed by any person or application with the link. Open it in an incognito window to be sure it’s publicly viewable.
+
+From the link you can extract the ID of the video, in the above example it’s a5b4c5d2e1 for demo purposes only. This is what you will need to insert in the html below.
+
+## The HTML
+
+Use the HTML below but be sure to replace the id with your videos id (from the URL you saved), e.g. “a5b4c5d2e1”.
+
+```html
+<video preload="true" autoplay loop muted>
+  <!-- Safari -->
+  <source
+    src="https://drive.google.com/uc?export=download&amp;id=a5b4c5d2e1"
+    type="video/mp4"
+  />
+  <!-- Chrome and FF -->
+  <source
+    src="https://drive.google.com/uc?export=download&amp;id=a5b4c5d2e1"
+    type="video/webm"
+  />
+</video>
+```
+
+## Summary
+
+While there are many potential ways to outsource your video streaming demands, using Google Drive offers an easy and cost effective solution.

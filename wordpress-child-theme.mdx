@@ -1,0 +1,39 @@
+---
+title: "Create a Wordpress child theme"
+description: "Providing a starting point for the child theme, which can be activated in wp-admin and then worked on. Requiring only two files style.css and functions.php."
+tags: ["wordpress", "wordpress-theme"]
+created_at: "2018-12-24"
+updated_at: ""
+---
+
+Providing a starting point for the child theme, which can be activated in wp-admin and then worked on. Requiring only two files style.css and functions.php.
+
+## Create style.css
+
+```css
+/*
+Theme Name: New Theme
+Theme URL:
+Description: Twenty Seventeen Child Theme
+Author: Clint Vidler
+Author URL: https://vidler.app
+Template: twentyseventeen
+Version: 0.1.0
+Text Domain:
+*/
+```
+
+## Create functions.php
+
+```php
+// Enqueues the stylesheet of the parent theme
+
+<?php
+add_action( 'wp_enqueue_scripts', 'enqueue_parent_styles' );
+
+function enqueue_parent_styles() {
+  wp_enqueue_style( 'parent-style',
+  get_template_directory_uri().'/style.css' );
+}
+?>
+```

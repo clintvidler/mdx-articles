@@ -1,0 +1,38 @@
+---
+title: "Redirect URL With GatsbyJS and Netlify"
+description: "Bulk URL redirecting that resembles the .htaccess method used for Apache."
+tags: ["gatsbyjs", "netlify"]
+created_at: "2020-03-10"
+updated_at: ""
+---
+
+Bulk URL redirecting that resembles the .htaccess method used for Apache.
+
+## Installing the plugin
+
+Firstly you need to install and include the plugin.
+
+```bash
+npm install --save gatsby-plugin-netlify
+```
+
+Include the plugin in your gatsby-config.js
+
+```js
+plugins: [`gatsby-plugin-netlify`];
+```
+
+## Creating the redirects
+
+Netlify reads a file called “\_redirects” in the project root folder. The problem however is that placing the file in the root of the Gatsby application doesn’t work, so instead we place it in the /static folder. From here the file will be copied to the base Netlify folder.
+
+Adding redirects:
+
+File: `_redirects`
+
+```js
+/some-old-url /the-new-url
+/another-old-url /the-new-url
+```
+
+**Notes:** Since this is supported by Netlify, it’s not going to work in your development environment.

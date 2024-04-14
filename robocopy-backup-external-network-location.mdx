@@ -1,0 +1,28 @@
+---
+title: "Easy backup to an external hard drive or network location using Robocopy"
+description: "The perfect solution for keeping a synchronized and secure offline backup of your important files and folders. There’s no need to install any new software, since Robocopy is a default feature in Windows since Vista."
+tags: ["utility"]
+created_at: "2018-11-20"
+updated_at: ""
+---
+
+The perfect solution for keeping a synchronized and secure offline backup of your important files and folders. There’s no need to install any new software, since Robocopy is a default feature in Windows since Vista.
+
+```bash
+robocopy C:\source X:\destination /MIR /FFT /R:5 /W:30 /Z /NP /NDL
+```
+
+- `/mir` is the most important option, standing for mirror. This treats the source folder as the one source of truth, overwriting any changes to the destination folder. Allowing your offline backup to efficiency synchronize all changes no matter when your last backup was.
+- `/FFT` allows a 2 second difference when comparing the timestamps of files, eliminating concerns about minor clock differences between your computer and your backup device. Ensuring only modified files are replaced even when times aren’t perfectly synchronized.
+- `/R:3` specifies the number of times to retry if the connection failed, while `/W:20` specifies how many seconds to wait between the successive retries. These controls are especially useful when backing up over a network.
+- `/Z` copies files in “restart mode”, allowing continuation of partially copied files after an interruption.
+- `/NP`, `/NDL`, `/NS`, `/NC` and `/NFL` suppress debugging output. It’s advisable to omit these controls while testing, that way you can ensure everything is working as expected.
+
+The example command in this article does exactly what I need, however your requirements could be different. In which case there are plenty of helpful resources available online.
+
+If you don’t know what to do with the above command, don’t worry, it’s easy and I’ll explain this as well.
+
+- Open command prompt by holding the ‘Windows Key’ and pressing ‘r’ (Win+r), then enter cmd in the dialogue box.
+- Enter cd\ to return to the root, from here you can run the Robocopy command.
+
+Be sure to change the source and destination folders.

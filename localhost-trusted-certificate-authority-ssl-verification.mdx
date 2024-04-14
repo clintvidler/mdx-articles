@@ -1,0 +1,36 @@
+---
+title: "Localhost trusted certificate authority, using mkcert for SSL verification"
+description: "Install mkcert; Create local certificate authority; Create certificates for your localhost application."
+tags: ["dev", "security"]
+created_at: "2022-07-18"
+updated_at: ""
+---
+
+Install mkcert; Create local certificate authority; Create certificates for your localhost application.
+
+## Mac
+
+Install mkcert using Homebrew:
+
+```bash
+brew install mkcert
+brew install nss
+```
+
+Create local certificate authority (CA):
+
+```bash
+mkcert -install
+```
+
+Create certificates for your localhost application:
+
+```bash
+mkcert localhost localhost 127.0.0.1 ::1
+```
+
+###### Troubleshooting
+
+**Problem:** Certificate is invalid. When clicking on the insecure warning next to the address bar to inspect the certificate it shows that it was issued by you computer with mkcert.
+
+**Solution:** You may have missed the step to make mkcert a local CA.

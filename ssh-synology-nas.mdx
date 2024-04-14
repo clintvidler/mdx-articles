@@ -1,0 +1,42 @@
+---
+title: "How to connect to a Synology NAS via SSH"
+description: "Enable SSH on your Synology NAS and connect using Windows, Mac or Linux."
+tags: ["synology", "utility", "security"]
+created_at: "2018-11-25"
+updated_at: ""
+---
+
+Enable SSH on your Synology NAS and connect using Windows, Mac or Linux.
+
+## Enable SSH on your Synology NAS
+
+1. Access your Synology NAS via the management web page
+2. Go to: Control Panel -> Terminal & SNMP
+3. Check “Enable SSH service”
+4. Apply
+
+## Connect with Terminal (Mac & Linux)
+
+Open terminal and run the following command from Terminal.
+
+```bash
+ssh -l <username> <ip-address-of-nas>
+```
+
+## Connect with PuTTY (Windows)
+
+PuTTY is a popular opensource SSH and Telnet client, you can [download it here](https://www.putty.org/). I opt for the .exe over the .msi installer, since it’s light weight and portable.
+
+### Create a connection to your Synology NAS with PuTTY:
+
+1. Run PuTTY
+2. Enter the IP of your NAS and give it a name in the “Saved Sessions” box, ensure SSH and port 22 are selected
+3. Save
+
+Now you can open an SSH connection via PuTTY, logging in using your Synology username and password.
+
+###### Additional Notes:
+
+- Right click functions as paste in PuTTY
+- Type ‘exit’ to close the SSH connection
+- To use a port other than the default port 22, -p 'port'

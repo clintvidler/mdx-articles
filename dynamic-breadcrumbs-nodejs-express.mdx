@@ -1,0 +1,70 @@
+---
+title: "Simple and dynamic breadcrumbs for a NodeJS & Express application"
+description: "I required the breadcrumbs to be centrally implemented to achieve minimal code repetition. This is why I decided to automatically generate and add them to each page requests dynamically. "
+tags: ["nodejs", "pugjs"]
+created_at: "2018-11-26"
+updated_at: ""
+---
+
+I required the breadcrumbs to be centrally implemented to achieve minimal code repetition. This is why I decided to automatically generate and add them to each page requests dynamically.
+
+At first I tested some of the available breadcrumb middlewares for Node/Express apps. However, these proved difficult to use and were lacking in configuration options. For this reason I decided to create my own breadcrumbs and to write about the process.
+
+## Add breadcrumbs to all requests
+
+Since we already use ‘req’ in the controllers to provide data to views, the cleanest implementation of dynamic breadcrumbs is to add them to each request before requiring the controllers.
+
+This code snippet uses the current page URL from ‘req’ to create breadcrumbs as an array of crumb objects, which I add to ‘req’.
+
+File: `app.js`
+
+```js
+get_breadcrumbs = function (url) {
+  var rtn = [{ name: "HOME", url: "/" }],
+    acc = "", // accumulative url
+    arr = url.substring(1).split("/");
+
+  for (i = 0; i < arr.length; i++) {
+    acc = i != arr.length - 1 ? acc + "/" + arr[i] : null;
+    rtn[i + 1] = { name: arr[i].toUpperCase(), url: acc };
+  }
+  return rtn;
+};
+
+app.use(function (req, res, next) {
+  req.breadcrumbs = get_breadcrumbs(req.originalUrl);
+  next();
+});
+```
+
+Accessing breadcrumbs in the controller or route
+
+This step is pretty simple and self explanatory now that breadcumbs are present in each ‘req’.
+
+File: `./controllers/someController.js`
+
+```js
+res.render("person_index", {
+  title: "Page Title",
+  breadcrumbs: req.breadcrumbs,
+});
+```
+
+## Rendering breadcrumbs in the view
+
+This step will vary depending on your view engine but should be easily adapted. In this example I’m using PugJS, formerly know as Jade as well as bootstrap 4.
+
+File: `./views/layout.pug`
+
+```
+if breadcrumbs
+  nav(aria-label='breadcrumb')
+    ol(class="breadcrumb")
+      each crumb, index in breadcrumbs
+        if index == breadcrumbs.length - 1
+          li(class='breadcrumb-item active' aria-current='page') #{crumb.name}
+        else
+          li(class='breadcrumb-item') #[a(href=crumb.url) #{crumb.name}]
+```
+
+I hope this tutorial has helped you get simple dynamic breadcrumbs working in your Node/Express application. I’d love to hear if you’ve come up with a different approach or any improvements on mine.

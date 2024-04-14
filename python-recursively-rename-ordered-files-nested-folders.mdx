@@ -1,0 +1,78 @@
+---
+title: "Use Python to recursively rename ordered the jpg files within nested folders"
+description: "Renames all files in leaf directories inside an arbitrarily nested folder structure, following a 4 digit format, e.g. 000x.jpg"
+tags: ["python", "scripting"]
+created_at: "2021-08-08"
+updated_at: ""
+---
+
+Renames all files in leaf directories inside an arbitrarily nested folder structure, following a 4 digit format, e.g. 000x.jpg
+
+Create as a file called 'py3-rename-4jpg.py', or 'anything.py'. It can then be called from the command line with the folder location as a parameter.
+
+```python
+import sys
+import os
+from os import path
+import shutil
+import re
+re.compile('<title>(.*)</title>')
+
+# usage on a folder called 'tmp dir' in the Downloads folder (note the handling of spaces in folder name)
+# from any location
+# username@computername Downloads % py3-rename-4jpg.py /Users/username/Downloads/tmp\ dir
+# from the containing location
+# username@computername Downloads % py3-rename-4jpg.py tmp\ dir
+# in this file
+# you can just define the Base_Path variable in this file instead
+
+# if True, then print out proposed file renaming, else do rename files
+dryrun = False
+# full operating system path
+Base_Path = None
+
+if len(sys.argv[1]) > 1:
+  Base_Path = sys.argv[1]
+
+def main():
+
+  for path in Get_Leaf_Dirs(Base_Path):
+
+    # clean up, by removing non image files
+    os.remove(f"{path}/.DS_Store") if os.path.exists(f"{path}/.DS_Store") else None
+    os.remove(f"{path}/Thumbs.db") if os.path.exists(f"{path}/Thumbs.db") else None
+
+    # get and sort files
+    files = os.listdir(path)
+    files.sort(key=lambda var:[int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var)])
+
+    # rename files inplace using 4 digit format, e.g. 0001.jpg
+    for count, filename in enumerate(files):
+      dst =  f"{count+1:04d}.jpg"
+      if dryrun: print(os.path.basename(filename) + ' >> ' + dst)
+      else: os.rename(os.path.join(path, filename),  os.path.join(path, dst))
+
+# recursively find dirs that don't contain dirs
+#  - returns leaf dirs (containing only files) as an array
+def Get_Leaf_Dirs(dir, leaves = None):
+  if leaves == None: leaves = []
+  children = os.listdir(dir)
+  isDir = False
+
+  if len(children) > 0:
+    for child in children:
+      dir_prime = dir + "/" + child
+
+      if os.path.isdir(dir_prime):
+        isDir = True
+        Get_Leaf_Dirs(dir_prime, leaves)
+
+    if not isDir:
+      leaves.append(dir)
+
+  return leaves
+
+# Driver Code
+if __name__ == '__main__':
+    main()
+```

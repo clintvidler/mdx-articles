@@ -1,0 +1,102 @@
+---
+title: "WordPress Advanced Custom Fields Cheatsheet"
+description: "A quick reference for Advanced Custom Fields for WordPress, to be used to get a project started quickly."
+tags: ["wordpress", "wordpress-plugin"]
+created_at: "2019-06-06"
+updated_at: ""
+---
+
+## Register Custom Post Type
+
+```php
+// Register Custom Post Types
+add_action('init', 'register_custom_posts_init');
+function register_custom_posts_init() {
+	$music_artists_labels = array(
+		'name' => 'Music Artists',
+		'singular_name' => 'Music Artist',
+		'menu_name' => 'Music Artists'
+	);
+	$music_artists_args = array(
+		'labels' => $music_artists_labels,
+		'menu_icon' => 'dashicons-format-audio',
+		'public' => true,
+		'capability_type' => 'post',
+		'has_archive' => false,
+		'supports' => array( 'title', 'editor', 'thumbnail', 'revisions' ),
+		'rewrite' => array( 'with_front' => false, 'slug' => 'music-artists' )
+	);
+	register_post_type('music_artists', $music_artists_args);
+}
+```
+
+```php
+<?php
+if ( have_posts() ) :
+	while ( have_posts() ) : the_post();
+		$ma = get_field('cpt_music_artists');
+		$music_styles = wp_get_post_terms( $id, "music_styles", array("fields" => "names") );
+		$ma_facebook = $ma['facebook'];
+		$ma_music_player = $ma['music_player'];
+		$ma_featured_image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'medium' ); ?>
+```
+
+## Register Custom Taxonomy
+
+```php
+//hook into the init action and call register_nonhierarchical_taxonomy_init when it fires
+add_action( 'init', 'register_nonhierarchical_taxonomy_init', 0 );
+function register_nonhierarchical_taxonomy_init() {
+// Labels part for the GUI
+	$labels = array(
+		'name' => _x( 'Music Styles', 'taxonomy general name' ),
+		'singular_name' => _x( 'Music Style', 'taxonomy singular name' ),
+		'search_items' =>	__( 'Search Music Styles' ),
+		'popular_items' => __( 'Popular Music Styles' ),
+		'all_items' => __( 'All Music Styles' ),
+		'parent_item' => null,
+		'parent_item_colon' => null,
+		'edit_item' => __( 'Edit Music Style' ),
+		'update_item' => __( 'Update Music Style' ),
+		'add_new_item' => __( 'Add New Music Style' ),
+		'new_item_name' => __( 'New Music Style Name' ),
+		'separate_items_with_commas' => __( 'Separate music styles with commas' ),
+		'add_or_remove_items' => __( 'Add or remove music styles' ),
+		'choose_from_most_used' => __( 'Choose from the most used music styles' ),
+		'menu_name' => __( 'Music Styles' ),
+	);
+// Now register the non-hierarchical taxonomy like tag
+	register_taxonomy('music_styles','music_artists',array(
+		'hierarchical' => true,
+		'labels' => $labels,
+		'show_ui' => true,
+		'show_admin_column' => true,
+		'update_count_callback' => '_update_post_term_count',
+		'query_var' => true,
+		'rewrite' => array( 'slug' => 'music_style' ),
+	));
+}
+```
+
+```php
+<?php for ($i = 0; $i < count($music_styles); $i++) { echo $music_styles[$i] . ( ($i+1 != count($music_styles)) ? ", " : "" ); } ?>
+```
+
+## Register Options Page
+
+```php
+if( function_exists('acf_add_options_page') ) {
+	acf_add_options_page(array(
+		'page_title' => 'Theme General Settings',
+		'menu_title' => 'Theme Settings',
+		'menu_slug' => 'theme-general-settings',
+		'capability' => 'edit_posts',
+		'redirect' => false
+	));
+	// acf_add_options_sub_page(array(
+	// 	'page_title' => 'Theme Footer Settings',
+	// 	'menu_title' => 'Footer',
+	// 	'parent_slug' => 'theme-general-settings',
+	// ));
+}
+```

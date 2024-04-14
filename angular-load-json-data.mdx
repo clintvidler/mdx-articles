@@ -1,0 +1,30 @@
+---
+title: "Load JSON data in Angular"
+description: "Error: “Cannot find module ‘./path/to/data.json’. Consider using ‘–resolveJsonModule’ to import module with ‘.json’ extension”"
+tags: []
+created_at: "2020-07-04"
+updated_at: ""
+---
+
+## Allow JSON data
+
+Loading large JSON files may consume a lot of memory, which is why TypeScript requires conscious enablement for importing JSON files. To do so, edit the TypeScript config file, found in the app root folder:
+
+File: `tsconfig.json`
+
+```ts
+"angularCompilerOptions": {
+  "resolveJsonModule": true
+}
+```
+
+Error: “Cannot find module ‘./path/to/data.json’. Consider using ‘–resolveJsonModule’ to import module with ‘.json’ extension”
+
+## Import JSON data
+
+Now you can import the JSON data without an error.
+
+```ts
+import * as data from "./path/to/data.json";
+console.log(data);
+```

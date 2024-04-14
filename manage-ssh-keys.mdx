@@ -1,0 +1,103 @@
+---
+title: "Manage SSH keys"
+description: "A quick guide on managing SSH keys on Mac and Windows"
+tags: ["utility"]
+created_at: "2019-03-06"
+updated_at: ""
+---
+
+## Manage SSH keys on a Mac (OSX)
+
+The generated key consists of a pair of files, one private and one public. It’s very important that you **never share the private key**, ever. While you will use the public key to authenticate with the external service.
+
+### Creating a key
+
+To generate the key using the Terminal:
+
+```bash
+# Run the command below to generate an SSH key, then follow the prompts.
+# Enter file location, or press enter to use the default location.
+# Enter a passphrase, or press enter to for no passphrase. If you opt to use a passphrase you will need to enter it to use the key.
+ssh-keygen
+```
+
+Now that the key can be copied to the clipboard ready for use:
+
+```bash
+pbcopy < ~/.ssh/id_rsa.pub
+```
+
+**Bonus:** Add the following to your '.bash_profile' so you only need to type your passphrase when opening the terminal.
+
+eval $(ssh-add)
+
+### Removing a key
+
+```bash
+# Remove the private and public key, assuming the keys are in the default location
+rm ~/.ssh/id_rsa && rm ~/.ssh/id_rsa.pub
+```
+
+### Bonus config
+
+Save servers for quick connection using, e.g.:
+
+```bash
+ssh myServer
+```
+
+Edit: '~/.ssh/config'
+
+```bash
+Host alias
+  HostName hostname
+  User user
+
+Host myServer
+  HostName 172.168.1.1
+  User root
+  IdentityFile ~/.ssh/id_rsa
+```
+
+## Manage SSH keys on Windows
+
+The generated key consists of a pair of files, one private and one public. It’s very important that you **never share the private key**, ever. While you will use the public key to authenticate with the external service.
+
+### Check for existing keys
+
+Check for existing keys using command prompt:
+
+```bash
+# if you get "No such file or directory" then you don't have any keys
+cd %userprofile%/.ssh
+
+# if you get "File Not Found" then you don't have any key
+dir id\_\*
+```
+
+If you already have an ssh key/s then you may like to reuse it. If you prefer not to, or don’t yet have an shh key then proceed to the next section.
+
+### Creating a key
+
+```bash
+ssh-keygen -t rsa -C "your_email@example.com"
+```
+
+(Press enter) when prompted to enter a file in which to save the key.
+
+(Optional) enter a passphrase. I prefer to use one. Each time you connect to a service using the key you’ll be asked for this password.
+
+**Note:** you must already have git installed with git bash for this command to work. You can [get git](https://git-scm.com/downloads) here.
+
+```bash
+# open the key with notepad ready to copy and paste for use
+notepad id_rsa.pub
+```
+
+### Connect via SSH using Command Prompt
+
+You’ll need to upload the public key to the service first.
+
+```bash
+ssh -l -p <port> <username>@<server>
+```

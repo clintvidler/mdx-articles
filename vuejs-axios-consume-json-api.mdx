@@ -1,0 +1,64 @@
+---
+title: "Using Axios in Vue to consume a JSON API"
+description: "This article provides a quick and easy approach for consuming API data in Vue using Axios."
+tags: ["vuejs"]
+created_at: "2019-03-17"
+updated_at: ""
+---
+
+This article provides a quick and easy approach for consuming API data in Vue using Axios.
+
+## Adding Axios to your Vue application
+
+Install Axios using NPM:
+
+```bash
+npm install --save axios
+```
+
+Assign Axios for usage as $http by adding this to the top of your main.js file.
+
+```js
+import Vue from "vue";
+import axios from "axios";
+
+Vue.prototype.$http = axios;
+```
+
+## Consuming an API URL inside a Vue component
+
+### Accessing and processing the API data
+
+Inside the `<script></script>`:
+
+```js
+export default {
+  data() {
+    return {
+      title: "Consuming an API",
+      data1: "",
+      data2: "",
+    };
+  },
+  mounted() {
+    this.$http
+      .get("<some_url>")
+      .then((response) => (this.data1 = response.data))
+      .catch((error) => console.log(error));
+    this.$http
+      .get("<some_url>")
+      .then((response) => (this.data2 = response.data))
+      .catch((error) => console.log(error));
+  },
+};
+```
+
+### Using API data
+
+Inside the `<template></template>`:
+
+```html
+<h1>{{ title }}</h1>
+<pre>{{ data1 }}</pre>
+<pre>{{ data2 }}</pre>
+```

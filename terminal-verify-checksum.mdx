@@ -1,0 +1,17 @@
+---
+title: "How to verify a checksum with terminal in Mac OS X"
+description: "Some software is provided with a checksum for ensuring it hasn’t been tampered with, here’s how to check it."
+tags: ["terminal", "security", "utility"]
+created_at: "2019-08-05"
+updated_at: ""
+---
+
+Some software is provided with a checksum for ensuring it hasn’t been tampered with, here’s how to check it.
+
+Run this in Terminal, it will generate a hash which should be compared with the one provided by your trusted source.
+
+```bash
+shasum -a 256 <filename>
+```
+
+The example above uses a 256-bit SHA hash, you may change it to suit your needs.

@@ -1,0 +1,41 @@
+---
+title: "Hide a field label in WordPress Advanced Custom Fields"
+description: "Simply add a hide label option to all fields created with ACF."
+tags: ["wordpress"]
+created_at: "2023-03-13"
+updated_at: ""
+---
+
+Simply add a hide label option to all fields created with ACF.
+
+`your-theme-folder/functions.php`
+
+```php
+...
+
+// Add option to hide label on ACF fields
+add_action('acf/render_field_settings', 'hidelabel_render_field_settings');
+function hidelabel_render_field_settings( $field ) {
+  acf_render_field_setting( $field, array(
+    'label'         => __('Hide Label?'),
+    'instructions'  => '',
+    'name'          => 'hide_label',
+    'type'          => 'true_false',
+    'ui'            => 1,
+  ), true);
+}
+
+// (cont.) Add option to hide label on ACF fields
+add_filter('acf/prepare_field', 'hidelabel_prepare_field');
+function hidelabel_prepare_field( $field )
+{
+  if ($field['hide_label'])
+    echo '
+    <style type="text/css">
+      .acf-field-', substr($field['key'],6),' > .acf-label {display: none;}
+    </style>';
+  return $field;
+}
+
+...
+```

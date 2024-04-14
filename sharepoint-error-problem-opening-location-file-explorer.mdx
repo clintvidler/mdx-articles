@@ -1,0 +1,17 @@
+---
+title: "SharePoint error: We're having a problem opening this location in File Explorer"
+description: "“We’re having a problem opening this location in File Explorer. Add this web site to your Trusted Sites list and try again.”"
+tags: ["sharepoint"]
+created_at: "2018-11-27"
+updated_at: ""
+---
+
+“We’re having a problem opening this location in File Explorer. Add this web site to your Trusted Sites list and try again.”
+
+This error can occur when the site collections parent doesn’t exist. For instance https://intranet/operations/hr/, if operations doesn’t have a site collection then hr will return this error when attempting to open file explorer.
+
+The solution is to create a site collection for the parent along with an “explicit inclusion” in managed paths.
+
+###### Additional reading
+
+Here’s a link to a [forum thread](https://blogs.msdn.microsoft.com/george_bethanis/2013/11/04/sps13-open-with-explorer-random-error-were-having-a-problem-opening-this-location-in-file-explorer-add-this-web-site-to-your-trusted-sites-list-and-try-again/) that provides more information on the topic.

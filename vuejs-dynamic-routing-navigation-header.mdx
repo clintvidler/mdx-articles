@@ -1,0 +1,183 @@
+---
+title: "Dynamic routing, navigation and page title with VueJS"
+description: "How to create a reusable header component, containing a dynamic page title and submenu."
+tags: ["vuejs"]
+created_at: "2019-05-13"
+updated_at: ""
+---
+
+How to create a reusable header component, containing a dynamic page title and sub-menu.
+
+## The problem this article addresses
+
+Say you have a site structure containing multiple pages, each with common information and management requirements. Take the structure shown below for example.
+
+```
+A SIMPLIFIED SITE STRUCTURE:
+
+Home (/)
++-- Users (/users)
++-- +-- Index (/)
++-- +-- Single (/:id)
++-- +-- Create (/create)
++-- +-- Update (/:id/update)
++-- Organisations (/organisations)
++-- +-- Index (/)
++-- +-- Single (/:id)
++-- +-- Create (/create)
++-- +-- Update (/:id/update)
++-- Etc.
+```
+
+I want a reusable header component that can be used for users and organisations, it needs to:
+
+- dynamically fill the page title (sometimes including the record ID)
+- dynamically generate a sub-menu of actions (such as CRUD)
+
+<CustomImage
+  src="https://raw.githubusercontent.com/clintvidler/mdx-articles/main/images/vuejs-dynamic-routing-navigation-header-screenshot.png"
+  alt="screenshot of the header"
+/>
+
+The image above show where the dynamic parts change based on the currently viewed route.
+
+## Dynamic component content method
+
+**Note:** The vue-router is required for this solution.
+
+This approach stores relevant data inside its route, which is cleaner and makes more sense than using emit or the vuex state.
+
+### The route
+
+This is the users route, however the organisations route will use the same approach. Pay special attention to the use of ‘meta’, which is where the magic happens:
+
+File: `@/routes/users.js`
+
+```js
+// import your components here
+
+export default {
+  path: "/users",
+  component: Layout,
+  meta: {
+    // Navigation used in the header
+    nav: [
+      {
+        id: 0,
+        text: "View All",
+        target: "/users",
+        icon: "fas fa-list-ul",
+      },
+      {
+        id: 1,
+        text: "Create New",
+        target: "/users/create",
+        icon: "fas fa-edit",
+      },
+    ],
+  },
+  children: [
+    {
+      path: "",
+      name: "UserIndex",
+      component: Index,
+      meta: {
+        title: "All Users",
+      },
+    },
+    {
+      path: "create",
+      name: "UserCreate",
+      component: Form,
+      meta: {
+        title: "Create User",
+      },
+    },
+    {
+      path: "volunteers",
+      name: "VolunteerIndex",
+      component: Volunteers,
+      meta: {
+        title: "Volunteers",
+      },
+    },
+    {
+      path: ":id/update",
+      name: "UserUpdate",
+      component: Form,
+      meta: {
+        title: "Updating User: ", // ID will be appended using $router.To
+      },
+    },
+    {
+      path: ":id",
+      name: "UserSingle",
+      component: Single,
+      meta: {
+        title: "User: ",
+      },
+    },
+  ],
+};
+```
+
+The root layout for users:
+
+File: `@/pages/layout.vue`
+
+```
+<template lang="pug">
+  div(id='page')
+    v-header
+    router-view
+</template>
+
+<script>
+  import Header from "@/components/Header";
+
+  export default {
+    components: {
+      "v-header": Header,
+    },
+  };
+</script>
+```
+
+The reusable header component:
+
+File: `@/components/Header.vue`
+
+```
+<template lang='pug'>
+  header
+    div(id='main-header')
+      div(class='container')
+        h1 {{ title }}
+          nav(id='page-nav' v-if='nav')
+            ul
+              li(v-for="item in nav" class="nav-link")
+                router-link(:key="item.id" :to="`${item.target}`")
+                  i(:class='item.icon')
+                  span {{ item.text }}
+
+</template>
+
+<script>
+export default {
+  computed: {
+    title: function () {
+      return this.$route.meta.title + (this.$route.params.id ? this.$route.params.id : '')
+    },
+    nav: function () {
+      return this.$route.matched[0].meta.nav
+    }
+  }
+}
+</script>
+```
+
+## Summary
+
+We’ve created a reusable header, containing a dynamic title and navigation to child pages, which is then added to the root page layout of each model.
+
+**Bonus:** this might also be used to create dynamic breadcrumbs, which is something I plan to explore in the future.

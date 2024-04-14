@@ -1,0 +1,30 @@
+---
+title: "Angular NgModel not working on custom component"
+description: "Some workarounds"
+tags: ["angular"]
+created_at: "2021-08-15"
+updated_at: ""
+---
+
+`[(ngModel)]` is not working on custom angular components
+
+```html
+<input type="text" [(ngModel)]="term" />
+```
+
+The above doesn't work on custom components, but you can replace with the following:
+
+```html
+<input type="text" [value]="term" (input)="term = $event.target.value" />
+```
+
+or, an alternative without the need for a component property:
+
+```html
+<input
+  matInput
+  type="text"
+  [value]="term || ''"
+  (input)="term = $event.target.value"
+/>
+```

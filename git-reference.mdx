@@ -1,0 +1,36 @@
+---
+title: "Git CLI reference"
+description: "Intended for my own reference, but if this proves helpful to others as well that’s great too."
+tags: ["git", "devops", "utility"]
+created_at: "2019-03-06"
+updated_at: ""
+---
+
+Roll back commits but keep work: `git reset --soft HEAD~1`
+
+Roll back commits and work: `git reset —hard HEAD~1`
+
+List remote branches: `git branch -r`
+
+List remote and local branches: `git branch -a`
+
+Pull remote branch:
+
+- `git switch <branchName>`, or
+- `git fetch origin; git checkout --track origin/branchName`
+
+Push remote branch: `git push -u origin branchName`
+
+Delete remote branch:
+
+- `git push origin --delete branchName`, or
+- `git push -D branchName`
+
+Configure profile (not providing the value will return the current value):
+
+- `git config --global user.name "Clint Vidler"`
+- `git config --global user.email address@example.com`
+
+List files changes in last commit: `git diff --name-only HEAD~0 HEAD~1`
+
+GUI changes: `gitk`

@@ -1,0 +1,63 @@
+---
+title: "Define a custom template in Wordpress for a specific post type"
+description: "Using theme.json or with php file"
+tags: ["wordpress", "wordpress-theme"]
+created_at: "2023-04-03"
+updated_at: ""
+---
+
+Using theme.json or with php
+
+## Method 1: theme.json
+
+Create a file in the 'your_theme_root/templates' folder matching the custom template name in the code below. For example `post-alt.html`.
+
+Place this inside the 'theme.json' file at the root of your theme.
+
+```js
+{
+  "version": 2,
+  "settings:: {},
+  "customTemplates": [
+    {
+      "name": "post-alt",
+      "title": "Alt for post",
+      "postTypes": ["post"]
+    },
+    {
+      "name": "page-or-post-alt",
+      "title": "Alt for page or post",
+      "postTypes": ["page", "post"]
+    }
+  ]
+  ...
+}
+```
+
+## Method 2: Using PHP
+
+Put a file in your theme containing the following (I also place this is my templates folder):
+
+```php
+<?php
+/*
+Template Name: My Custom PHP Template
+Template Post Type: page
+*/
+```
+
+## Additional notes
+
+I found that the php version was more useful for 'WP_Query' as I could do something like the following (where `$post_object_id` is the filename of interest). This is filter for posts using the given page template.
+
+```php
+$query_args['meta_query'] = [
+  [
+    'key' => '_wp_page_template',
+    'value' => 'templates/' . $post_object_id . '.php',
+    'compare' => 'IN',
+  ]
+];
+```
+
+If you know how to do this using the first method I'd be interested to know how.

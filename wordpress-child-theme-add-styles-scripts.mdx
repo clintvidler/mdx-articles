@@ -1,0 +1,26 @@
+---
+title: "Add Styles and Scripts to a WordPress child theme"
+description: "Load Wordpress scripts and styles the right way, by adding the following code to functions.php."
+tags: ["wordpress", "wordpress-theme"]
+created_at: "2019-04-10"
+updated_at: ""
+---
+
+Load WordPress scripts and styles the right way, by adding the following code to 'functions.php'.
+
+```php
+<?php
+add_action( 'wp_enqueue_scripts', 'enqueue' );
+function enqueue() {
+  // stylesheet from the parent theme
+  wp_enqueue_style( 'parent-style', get_template_directory_uri().'/style.css' );
+  // child theme style.css
+  wp_enqueue_style( 'child-style', get_stylesheet_uri() );
+  // child theme css and scripts
+  wp_enqueue_style( 'child-theme-style', get_stylesheet_directory_uri().'/css/theme.css' );
+  wp_enqueue_script( 'child-theme-scripts', get_stylesheet_directory_uri().'/js/theme.js' );
+}
+?>
+```
+
+You may also find this this [article](/posts/wordpress-child-theme) helpful. Explaining how to create a basic WordPress child theme, that’s ready to be customised.

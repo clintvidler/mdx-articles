@@ -1,0 +1,66 @@
+---
+title: "Angular JSON data service"
+description: "A simple method for loading and sharing JSON data across an Angular app using a shared service."
+tags: ["angular"]
+created_at: "2020-07-05"
+updated_at: ""
+---
+
+A simple method for loading and sharing JSON data across an Angular app using a shared service.
+
+## Create the service
+
+Create a the service file in the src/shared folder:
+
+File: `./shared/data.service.ts`
+
+```ts
+import { Injectable } from "@angular/core";
+
+import * as Data from "path/to/data.json";
+
+@Injectable({
+  providedIn: "root",
+})
+export class DataService {
+  data = Data;
+
+  getItems() {
+    return this.data;
+  }
+
+  constructor() {}
+}
+```
+
+## Use the service
+
+To use the service you need to import it:
+
+File: `some.component.ts`
+
+```ts
+import { DataService } from "./shared/data.service";
+
+export class SomeComponent implements OnInit {
+  title = "Some Title";
+
+  constructor(private dataService: DataService) {}
+
+  ngOnInit(): void {
+    console.log(this.dataService.getItems());
+  }
+}
+```
+
+## Summary
+
+You have created a shared service for loading JSON data, which can be imported across an app as desired.
+
+###### Troubleshooting:
+
+Error: `“Cannot find module ‘./path/to/data.json’. Consider using ‘–resolveJsonModule’ to import module with ‘.json’ extension”`. If you come across this error, take a look at step 1 in [this article](/posts/angular-load-json-data).
+
+Related links
+
+https://angular.io/start/start-data

@@ -1,0 +1,59 @@
+---
+title: "NodeJS cross origin resource sharing (CORS)"
+description: "When attempting to access an API backend you will receive a CORS error if the appropriate headers aren’t configured on the http responses."
+tags: ["nodejs", "expressjs", "restful-api"]
+created_at: "2019-04-05"
+updated_at: ""
+---
+
+When attempting to access an API backend you will receive a CORS error if the appropriate headers aren’t configured on the http responses.
+
+Blocking CORS is a default security feature of web browsers. Something you may not of encountered prior to attempting to decouple your front and backend servers. Here’s the error:
+
+```bash
+Access to XMLHttpRequest at ‘http://localhost:3030/’ from origin ‘http://localhost:8080’ has been blocked by CORS policy: No ‘Access-Control-Allow-Origin’ header is present on the requested resource.
+```
+
+Initially you might think something’s wrong with the front-end request, this isn’t the case. There’s nothing to be done on the front-end to solve this. The issue is on the backend, and luckily it’s an easy fix.
+
+Allowing CORS requires some headers be added to the backend http responses.
+
+## Using NodeJS Express:
+
+File: `app.js`
+
+```js
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  // You may also want to include other HTTP methods, PUT, PATCH, DELETE etc.
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+```
+
+## Using NPM Middleware:
+
+A Node Middleware has been created specifically to make this task even easier.
+
+From your CLI:
+
+```bash
+npm install cors --save
+```
+
+Include these line in your app.js file:
+
+```js
+// Near the top
+const cors = require("cors");
+
+// Somewhere after var app = express();
+app.use(cors());
+```
+
+Read more about this [package](https://www.npmjs.com/package/cors) at npm.
+
+## Summary
+
+This article has focused on dealing with CORS from a Node Express API, however the mentioned headers are relevant to any server side systems.

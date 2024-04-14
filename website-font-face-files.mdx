@@ -1,0 +1,69 @@
+---
+title: "Define a custom font face using woff files"
+description: "In this article I will explain how to define a new font-family using @font-face and WOFF type fonts."
+tags: ["web-design"]
+created_at: "2018-11-22"
+updated_at: ""
+---
+
+In this article I will explain how to define a new `font-family` using `@font-face` and 'WOFF' type fonts.
+
+## Upload the font files
+
+Since we’re hosting our own font files, they will need to be hosted on a web server. That way not just visitors with the fonts already installed can render the text correctly. Failing to make the fonts available online would result in the majority of visitors seeing one of the fallback fonts, which is less than ideal. By hosting the fonts ourselves we’re ensuring a consistent user experience for each and every visitor.
+
+## The CSS
+
+### Defining a custom font-family
+
+Now that the font files have been uploaded we can define a custom `font-family` using `@font-face` in our css. The following css goes a step further, defining a range of font weights, this is usually unnecessary.
+
+```css
+@font-face {
+  font-family: Whitney;
+  font-weight: 300;
+  src: url(/wp-content/themes/vidler/fonts/Whitney-300.woff) format("woff");
+}
+
+@font-face {
+  font-family: Whitney;
+  font-weight: 400;
+  src: url(/wp-content/themes/vidler/fonts/Whitney-400.woff) format("woff");
+}
+
+@font-face {
+  font-family: Whitney;
+  font-weight: 500;
+  src: url(/wp-content/themes/vidler/fonts/Whitney-500.woff) format("woff");
+}
+
+@font-face {
+  font-family: Whitney;
+  font-weight: 600;
+  src: url(/wp-content/themes/vidler/fonts/Whitney-600.woff) format("woff");
+}
+
+@font-face {
+  font-family: Whitney;
+  font-weight: 700;
+  src: url(/wp-content/themes/vidler/fonts/Whitney-700.woff) format("woff");
+}
+```
+
+### Using the custom font-family
+
+Now that we have defined our font-family, we can use it in precisely the same way as any other font-family.
+
+```css
+body,
+button,
+input,
+select,
+textarea {
+  font-family: "Whitney", Georgia, serif;
+}
+```
+
+Additional Information
+
+Before jumping in and setting up your own `font-family` it’s worth checking if Google Fonts has what you need. Google Fonts lets you browse through 900+ fonts and to build custom sets that can be added to your website with a single line of html.

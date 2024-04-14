@@ -1,0 +1,26 @@
+---
+title: "Create a new Wordpress theme file using only wp-admin, no FTP required"
+description: "Creating new WordPress theme files is generally quick and easy, but what if you don’t have FTP or host access?"
+tags: ["wordpress", "wordpress-theme"]
+created_at: "2018-11-23"
+updated_at: ""
+---
+
+Creating new WordPress theme files is generally quick and easy, but what if you don’t have FTP or host access?
+
+You might run into this problem when you’re stuck behind a proxy that blocks critical ports, as I was. Or maybe you’re doing some work for a client who doesn’t want to or isn’t able to share FTP access.
+
+Luckily it’s not at all difficult to get around this type of problem once you know how, even if mildly inconvenient. It should be noted that this method has proven to work for php and css files, but sadly not for Javascript files. Disappointing yes, but still better than nothing.
+
+Here’s how to create the new theme file:
+
+From wp-admin, navigate to 'Appearance -> Editor'
+Find the ‘Main Index Template’, also know as 'index.php' and insert the following code at the top (being sure to specify the name of the file and your wordpress theme directory)
+
+```php
+<?php touch('wp-content/themes/my-theme/my-file.php'); ?>
+```
+
+**Important:** Ensure you don’t place this code between existing `<?php ?>` tags, otherwise you may cause an error.
+
+**Disclaimer:** If you aren’t comfortable editing theme files, or if you simply prefer, you can find a plugin for this task. I like to keep things simple, neat and tidy, but most of all stable. For this reason I only add the bare minimum number of plugins to my WordPress installation.

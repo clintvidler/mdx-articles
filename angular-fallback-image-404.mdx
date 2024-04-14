@@ -1,0 +1,27 @@
+---
+title: "Angular component 404 fallback image"
+description: "Try to load an image, but if it doesn't exist instead load another image."
+tags: ["angular"]
+created_at: "2022-01-28"
+updated_at: ""
+---
+
+Try to load an image, if it doesn't exist, load fallback image.
+
+`.html`
+
+```html
+<img
+  [src]="getImage(v)"
+  alt="Photo of {{ v.name }}"
+  (error)="errImage($event, v)"
+/>
+```
+
+`.ts`
+
+```ts
+errImage(e: any, v: any): void {
+  e.target.src = this.getAltImage(v);
+}
+```

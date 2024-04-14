@@ -1,0 +1,39 @@
+---
+title: "Automatically backup Wordpress to Google Drive"
+description: "Use Softaculous from cPanel to backup WordPress to Google Drive automatically on a schedule, be it daily, weekly or a custom frequency."
+tags: ["wordpress", "softaculous", "devops"]
+created_at: "2019-04-09"
+updated_at: ""
+---
+
+Use Softaculous from cPanel to backup WordPress to Google Drive automatically on a schedule, be it daily, weekly or a custom frequency.
+
+Go to your website hosting cPanel and run “Softaculous Apps Installer”. On the Softaculous home page you should see “Installations” and “Backups” up the top. We’ll be using both of these in this guide.
+
+## Add Google Drive as a backup location
+
+1. Select “Backups”
+2. Select “Manage Backup Locations”
+3. Select “Add Backup Location”
+4. Enter “Location Name”, I called mine “GoogleDrive” for simplicity
+5. For “Protocol” select “Google Drive” (Note: you could also use Dropbox)
+6. Enter a “Backup Location”, although (Optional) it’s advisable. I use “/WebsiteBackups/'websitename'”, that way my website backups are contained in a dedicated folder
+7. Select “Add Backup Location”
+8. Authorize Softaculous to access your Google Account
+9. You should get a confirmation “Backup Location added successfully”
+
+## Schedule the backup
+
+Return to Softaculous home.
+
+1. Select “Installations”
+2. Select “Edit (the pencil)” for the Installation in question
+3. Part way down the page you’ll find the backup configuration options.
+4. Select “Backup Location”, “GoogleDrive” in my case.
+5. Select the frequency with the “Automated backups” field.
+6. Define the “Backup Rotation”, the number of backups to keep
+7. Select “Save Installation Details”
+
+## Summary
+
+You backup has been configured to occur automatically on a set schedule. The entire WordPress website, including the file system and database will be regularly backed up to Google Drive.

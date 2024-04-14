@@ -1,0 +1,18 @@
+---
+title: "How to connect to a webserver via SSH"
+description: "The following command will establish an SSH connection to your web server using Terminal."
+tags: ["utility"]
+created_at: "2020-01-01"
+updated_at: ""
+---
+
+The following command will establish an SSH connection to your web server using Terminal.
+
+```bash
+ssh ssh://<username>@<server-address>:<port>
+```
+
+Requires two previous steps:
+
+1. Grant SSH access permission on your host for your IP address.
+2. Have uploaded and authorised (in cPanel) your public SSH key, which was [generated on your local machine](/posts/manage-ssh-keys).

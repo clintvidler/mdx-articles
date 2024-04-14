@@ -1,0 +1,20 @@
+---
+title: "Check if Golang interface is a slice"
+description: "This function returns true if the given interface is a slice, otherwise it returns false."
+tags: ["golang"]
+created_at: "2022-01-12"
+updated_at: ""
+---
+
+This function returns true if the given interface is a slice, otherwise it returns false.
+
+```go
+func InterfaceIsSlice(t interface{}) bool {
+  switch reflect.TypeOf(t).Kind() {
+  case reflect.Slice:
+    return true
+	default:
+  return false
+  }
+}
+```

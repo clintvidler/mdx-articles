@@ -1,0 +1,115 @@
+---
+title: "Golang populate relationship field using MongoDB aggregate and lookup"
+description: "Replace the relationship ID with the data object that it references."
+tags: ["golang", "mongodb", "nosql"]
+created_at: "2022-01-18"
+updated_at: ""
+---
+
+Replace the relationship ID with the data object that it references.
+
+I came from NodeJS and it's Mongoose ORM for Mongo, which had a handy Populate method. Such a method doesn't exist with the MongoDB Go Driver. I achieved a similar join-like result by using the MongoDB Aggregate method, which pipelines operations.
+
+## Overview
+
+In this example I demonstrate an Aggregate pipeline that sequences the following:
+
+1. Search (using $match)
+2. Sort (using $sort)
+3. Skip (using $skip)
+4. Limit (using $limit)
+5. Populate (using $lookup)
+
+This sequence handles search, sort and pagination before populating the relationship field.
+
+## Implementation
+
+### Structs
+
+The parent_id field isn't displayed on the JSON response, instead the populated parent field is displayed.
+
+```go
+type Parent struct {
+  ID primitive.ObjectID `json:"id,omitempty" bson:"_id"`
+}
+
+type Child struct {
+  ID       primitive.ObjectID `json:"id,omitempty" bson:"_id"`
+  ParentID primitive.ObjectID `json:"-" bson:"parent_id"`
+  Parent   []Parent           `json:"parent" bson:"parent"`
+}
+```
+
+### Function for many
+
+This function runs on the Child struct, which references the Parent struct by ID. It takes in some query params for search and pagination and returns the data, along with a count of the number of documents matching the given criteria.
+
+```go
+func ReadManyChildren(limit int, page int, search string) ([]Parent, int, error) {
+  var ps []Parent
+
+  searchFilter := bson.M{"name": bson.M{"$regex": search, "$options": "im"}}
+
+  var aggSearch, aggSort, aggLimit, aggSkip, aggPopulate, aggProject bson.M
+
+  // Filter by search term
+  aggSearch = bson.M{"$match": searchFilter}
+
+  // Sort by name in ascending order
+  aggSort = bson.M{"$sort": bson.M{"name": 1}}
+
+  // Pagination
+  if limit > 0 && page > 0 {
+    aggSkip = bson.M{"$skip": int64(int(math.Abs(float64(page-1))) * limit)}
+    aggLimit = bson.M{"$limit": int64(limit)}
+  }
+
+  // Populate Parent field
+  aggPopulate = bson.M{"$lookup": bson.M{
+    "from":         "Parent",    // the collection name
+    "localField":   "parent_id", // the field on the child struct
+    "foreignField": "_id",       // the field on the parent struct
+    "as":           "parent",    // the field to populate into
+  }}
+
+  // Take first element from the populated array (there is only one)
+  aggProject = bson.M{"$project": bson.M{
+    "parent": bson.M{"$arrayElemAt": []interface{}{"$parent", 0}},
+  }}
+
+  cursor, _ := childCollection.Aggregate(context.TODO(), []bson.M{
+    aggSearch, aggSort, aggSkip, aggLimit, aggPopulate, aggProject,
+  })
+
+  if err = cursor.All(context.TODO(), &ps); err != nil {
+    return nil, 0, err
+  }
+
+  count, _ := childCollection.CountDocuments(context.TODO(), searchFilter)
+
+  return ps, int(count), nil
+}
+```
+
+### Function for one
+
+The above function can be used to replace ‘Find', but for ‘FindOne' the unmarshalling of the cursor needs to be a singular, rather than a slice.
+
+```go
+var p Parent
+
+...
+
+// Decode the first (and only) document
+if cursor.Next(context.TODO()) {
+    err := cursor.Decode(&p)
+    if err != nil {
+      return p, err
+  }
+}
+```
+
+###### References
+
+- [https://docs.mongodb.com/upcoming/reference/operator/aggregation](https://docs.mongodb.com/upcoming/reference/operator/aggregation)
+- [https://github.com/mongodb/mongo-go–driver](https://github.com/mongodb/mongo-go–driver)

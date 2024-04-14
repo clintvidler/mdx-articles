@@ -1,0 +1,47 @@
+---
+title: "Connect to MongoDB using Mongoose with NodeJS"
+description: "I’ll show the method I use to connect to a mongo database, served local or from the cloud."
+tags: ["nodejs", "mongodb", "mongoose", "data"]
+created_at: "2019-01-27"
+updated_at: ""
+---
+
+I’ll show the method I use to connect to a mongo database, served local or from the cloud.
+
+## The database connection
+
+This file isolates the database connection information, making it reusable and simplifying the rest of the application. I’ve included both local and cloud connection strings, which can be used interchangeably or simultaneously.
+
+File: `./config/database.js`
+
+```js
+// IMPORTANT: for security purposes, exclude this file from your git repo
+
+module.exports = {
+  cloud: "mongodb://admin:Password@database-url:port/database-name",
+  local: "mongodb://127.0.0.1/database-name",
+};
+```
+
+## Using the connection
+
+Use the connection in you main application file, app.js in my case. I’ve defined database.local to use the local database connection string, database.cloud would use the cloud database connection string.
+
+File: `app.js`
+
+```js
+const database = require("./config/database.js");
+mongoose.connect(database.local, { useNewUrlParser: true });
+```
+
+###### Additional considerations
+
+Of course you will also need to install Mongoose and require it in your application.
+
+File: `app.js`
+
+```js
+const mongoose = require("mongoose");
+```
+
+And if you want to use mongo locally, you’ll need to install it. This is highly recommended, as you’ll be able to keep working while offline.

@@ -1,0 +1,28 @@
+---
+title: "Find text inside files using Terminal on Linux or Mac OSX"
+description: "Use grep to search for some particular text inside files and folders recursively."
+tags: ["terminal", "utility"]
+created_at: "2020-05-25"
+updated_at: ""
+---
+
+Use grep to search for some particular text inside files and folders recursively.
+
+```bash
+$ grep -rnw '/path' -e 'search term'
+
+# Backticks to use pwd /src as the search target
+$ grep -rnw `pwd`/src -e 'search term'
+
+# As above but with exclude of a dir
+$ grep -rnw --exclude-dir=node_modules -e 'search term' `pwd`
+
+# As above but with multiple excluded dirs
+$ grep -rnw --exclude-dir={node_modules,build} -e 'search term' `pwd`
+```
+
+- -r is recursive,
+- -n is line number
+- -w is to match the whole word
+
+Note: the path is not relative to your current directory, so you may wish to use ‘pwd’ to display your current directory path and copy paste this in as the path.

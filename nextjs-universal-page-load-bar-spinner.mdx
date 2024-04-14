@@ -1,0 +1,74 @@
+---
+title: "Add a universal page load bar/spinner for NextJS website"
+description: "This is very easy when you make use of the NextJS router events and the NProgress package."
+tags: ["nextjs"]
+created_at: "2023-01-11"
+updated_at: ""
+---
+
+Adding this is very easy when you make use of the NextJS router events and the NProgress package.
+
+Install [nprogress](https://www.npmjs.com/package/nprogress).
+
+Add the following code to your root NextJS application (feel free to remove the ApolloProvider code).
+
+Make sure to import the nprogress css, otherwise there won't be any styles.
+
+This works by attaching nprogress events to the NextJS router events.
+
+`FILENAME: ./pages/_app.js`
+
+```js
+import { ApolloProvider } from "@apollo/client";
+import Router from "next/router";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
+
+import "../src/styles/index.scss";
+import client from "../src/apollo/client";
+
+NProgress.configure({ minimum: 0.1 });
+NProgress.configure({ trickleRate: 0.1, trickleSpeed: 400 });
+Router.events.on("routeChangeStart", () => NProgress.start());
+Router.events.on("routeChangeComplete", () => NProgress.done());
+Router.events.on("routeChangeError", () => NProgress.done());
+
+function MyApp({ Component, pageProps }) {
+  return (
+    <ApolloProvider client={client}>
+      <Component {...pageProps} />
+    </ApolloProvider>
+  );
+}
+
+export default MyApp;
+```
+
+Add some of your own styles, color, position, and size.
+
+```scss
+#nprogress {
+  .bar {
+    background: #ffffff !important;
+    height: 3px;
+  }
+
+  // blur effect
+  .peg {
+    box-shadow: 0 0 10px #ffffff, 0 0 5px #ffffff;
+  }
+
+  .spinner {
+    top: 10px;
+    right: 10px;
+  }
+
+  .spinner-icon {
+    border-top-color: #ffffff;
+    border-left-color: #ffffff;
+    width: 40px;
+    height: 40px;
+    z-index: 2;
+  }
+}
+```

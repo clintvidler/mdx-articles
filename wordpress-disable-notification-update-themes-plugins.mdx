@@ -1,0 +1,45 @@
+---
+title: "Disable update notifications for Wordpress themes and plugins"
+description: "There may come a time where a theme or plugin cannot be updated for some reason or another, while it persistently harasses you in WP Admin."
+tags: ["wordpress"]
+created_at: "2019-05-07"
+updated_at: ""
+---
+
+There may come a time where a theme or plugin cannot be updated for some reason or another, while it persistently harasses you in WP Admin.
+
+The following code blocks may be placed in any the these locations:
+
+- Your themes functions.php file
+- A WordPress Plugin
+- Or my preference, wp-config.php
+
+I prefer the wp-config.php file approach because it’s independent, having no reliance on any theme or plugin.
+
+## Disable theme update notifications
+
+```php
+function filter_theme_update_notifications ( $value ) {
+	if ( isset( $value ) && is_object( $value ) ) {
+		unset( $value->response['twentynineteen'] );
+		// list more here is needed
+  }
+  return $value;
+}
+add_filter( 'site_transient_update_themes', 'filter_theme_update_notifications' );
+```
+
+## Disable plugin update notifications
+
+```php
+function filter_plugin_update_notifications( $value ) {
+	if ( isset( $value ) && is_object( $value ) ) {
+		unset( $value->response['woocommerce/woocommerce.php'] );
+		// list more here is needed
+  }
+  return $value;
+}
+add_filter( 'site_transient_update_plugins', 'filter_plugin_update_notifications' );
+```
+
+I hope this article has helped you remove those pesky WordPress update notifications.

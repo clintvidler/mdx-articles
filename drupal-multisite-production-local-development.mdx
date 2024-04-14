@@ -1,0 +1,108 @@
+---
+title: "Setup Drupal 9 Multisite production and local development"
+description: "My process for setting up a Drupal multisite environment."
+tags: ["drupal", "drupal-multisite"]
+created_at: "2020-09-30"
+updated_at: ""
+---
+
+_This article is yet to be completed, but stands to offer some useful information._
+
+It doesn’t matter which version is created first, local or remote, but we start with the remote version.
+
+## Create Drupal Multisite on the web server
+
+### Create databases
+
+Create the databases via cPanel.
+
+### Install Drupal 9
+
+SSH to the web server and navigate to the intended installation location (typically the domain folder).
+
+```bash
+# download and unzip the latest Drupal version
+wget https://www.drupal.org/download-latest/zip
+unzip zip
+
+# move the folder to the root install location
+mv -f drupal-9.x/{.,}\* /home/username/drupal.com.au
+
+# create the settings.php file
+cp sites/default/default.settings.php sites/default/settings.php
+chmod a+w sites/default/settings.php
+chmod a+w sites/default
+```
+
+Visit the URL and complete the wizard, using the already created databases. Add a database prefix, such as ‘drp\_’.
+
+Reference: [https://www.drupal.org/documentation/install/developers](https://www.drupal.org/documentation/install/developers)
+
+### Enable Multisite
+
+```bash
+# Create the sites.php file
+cp sites/example.sites.php sites/sites.php
+```
+
+### Create additional site
+
+Add the following to the bottom of 'sites/sites.php'
+
+```bash
+$sites['example.com.au'] = 'example.com.au';
+```
+
+Create a folder and settings.php for the site.
+
+```bash
+mkdir sites/example.com.au
+cp sites/default/default.settings.php sites/example.com.au/settings.php
+```
+
+1. Create a subdomain the site (could also an add-on domain)
+2. Delete the folder that was automatically created
+3. Create a symbolic link in its place
+
+```bash
+# point the additional site to the root of the root site
+ln -s ~/domain.com.au example.domain.com.au
+
+# removing a symbolic link
+unlink <path>
+```
+
+Reference: [https://www.drupal.org/docs/multisite-drupal/set-up-a-multisite](https://www.drupal.org/docs/multisite-drupal/set-up-a-multisite)
+
+## Create a local development copy
+
+### Export Drupal
+
+Export a copy of the database into a folder in the Drupal installation folder, which will become part of the Git repo.
+
+```bash
+mysqldump -u username -p <db_name> > database/<db_name>.sql
+```
+
+Create a Git repo, adding all files and folders in the Drupal root.
+
+### Import Drupal
+
+Download the repo, and rename folder as desired.
+
+Edit 'settings.php' for each site.
+
+```php
+$databases['default']['default'] = array (
+  'database' => 'localdb',
+  'username' => 'root',
+  'password' => '',
+  'prefix' => 'drp\_',
+  'host' => '127.0.0.1',
+  'port' => '3306',
+  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
+  'driver' => 'mysql',
+);
+```
+
+Import the site via devdesktop, specifying the folder location and using the exported SQL dump file.

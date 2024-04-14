@@ -1,0 +1,54 @@
+---
+title: "Restore a deleted MySite Collection on SharePoint 2013"
+description: "This article explains how to restore a site collection and if necessary, how to work around the later issue."
+tags: ["sharepoint"]
+created_at: "2018-11-25"
+updated_at: ""
+---
+
+Sometimes when a MySite Collection has been deleted, an automatic recreation can be triggered, preventing simple recovery. This article explains how to restore a site collection and if necessary, how to work around the later issue.
+
+## Restore a deleted Site Collection
+
+Using PowerShell:
+
+```bash
+# List deleted sites
+Get-SPDeletedSite
+
+# Restore site using SiteId
+Restore-SPDeletedSite -Identity <SiteId>
+```
+
+## Failure with error
+
+If running the above restoration command returns the following error it means that the Site Collection has been automatically recreated.
+
+```bash
+Restore-SPDeletedSite : A site collection with the same Site Id or Path already exists.
+At line:1 char:1
++ Restore-SPDeletedSite -Identity 8e453dbf-044c-4b4a-91d2-7e71abcf1c20
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (Microsoft.Share...toreDeletedSite:
+   SPCmdletRestoreDeletedSite) [Restore-SPDeletedSite], SPException
+    + FullyQualifiedErrorId : Microsoft.SharePoint.PowerShell.SPCmdletRestoreD
+   eletedSite
+```
+
+Don’t overwrite the existing MySite, delete it and then restore following the steps below. Be sure to copy down the original Site Collection information, specifically the “SiteId” from the list of deleted sites.
+
+## The work around
+
+[This guide](https://technet.microsoft.com/en-au/library/cc262392.aspx#section1) explains how to remove the existing MySite using Central Administration. And with this done, the desired MySite Collection can now be restored.
+
+```bash
+# Re-Run Restore using SiteId
+Restore-SPDeletedSite -Identity <SiteId>
+
+# Remove the unwanted MySite
+Remove-SPDeletedSite -Identity <SiteId>
+```
+
+###### Additional resources
+
+SharePoint [PowerShell commands reference](https://technet.microsoft.com/en-us/library/hh286316.aspx).

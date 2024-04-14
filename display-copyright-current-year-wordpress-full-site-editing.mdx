@@ -1,0 +1,17 @@
+---
+title: "Display the ‘current year' in the WordPress full site editing footer block"
+description: ""
+tags: ["wordpress", "wordpress-full-site-editing", "wordpress-gutenberg"]
+created_at: "2023-03-03"
+updated_at: ""
+---
+
+1. Edit the footer template part
+2. Insert a “Custom HTML” block
+3. Enter the following
+
+```js
+Copyright &copy; <script>document.write(new Date().getFullYear());</script> Your Site Name
+```
+
+The above code uses JavaScript to keep the current year up-to-date.

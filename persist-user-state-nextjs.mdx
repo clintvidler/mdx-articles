@@ -1,0 +1,275 @@
+---
+title: "Persist user state context provider and cookie in NextJS"
+description: "Use a combination of application context and browser cookies to save and retrieve state in a NextJS app."
+tags: ["nextjs"]
+created_at: "2023-01-11"
+updated_at: ""
+---
+
+Use a combination of application context and browser cookies to save and retrieve state in a NextJS app.
+
+## Required packages
+
+- [axios](https://www.npmjs.com/package/axios)
+- [cookie](https://www.npmjs.com/package/cookie)
+
+## Setting up the context provider
+
+Using react createContext and useContext.
+
+`./src/contexts/location.js`
+
+```js
+import { createContext, useContext, useState } from "react";
+import { SetLocation } from "../utils/location";
+
+const Context = createContext();
+
+export function LocationProvider({ children, cookie }) {
+  const [location, setLocation] = useState(cookie);
+
+  return (
+    <Context.Provider value={[location, setLocation]}>
+      {children}
+    </Context.Provider>
+  );
+}
+
+export function useLocationContext() {
+  SetLocation(Context._currentValue[0]);
+
+  return useContext(Context);
+}
+```
+
+Add the context provider to the root app.
+
+**Note:** Feel free to remove Apollo, NProgress, and Router events.
+
+`./pages/_app.js`
+
+```js
+import { ApolloProvider } from "@apollo/client";
+import Router from "next/router";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
+
+import "../src/styles/index.scss";
+import client from "../src/apollo/client";
+import { LocationProvider } from "../src/contexts/location";
+
+NProgress.configure({ minimum: 0.1 });
+NProgress.configure({ trickleRate: 0.1, trickleSpeed: 400 });
+Router.events.on("routeChangeStart", () => NProgress.start());
+Router.events.on("routeChangeComplete", () => NProgress.done());
+Router.events.on("routeChangeError", () => NProgress.done());
+
+function MyApp({ Component, pageProps }) {
+  return (
+    <ApolloProvider client={client}>
+      <LocationProvider>
+        <Component {...pageProps} />
+      </LocationProvider>
+    </ApolloProvider>
+  );
+}
+
+export default MyApp;
+```
+
+## Getting and setting the cookies
+
+The way that I get and set cookies, and more on getting them than I actually use, look out for the note about this.
+
+`./pages/api/get-location.js`
+
+```js
+import { getLocation } from "../../src/utils/cookies";
+
+export default async function location(req, res) {
+  res.status(200).json({ success: getLocation(req) });
+}
+```
+
+`./pages/api/get-location.js`
+
+```js
+import cookie from "cookie";
+
+export default async function location(req, res) {
+  const { location } = req?.body ?? {};
+
+  let maxAge = 60 _ 60 _ 24 \* 30; // 1 month
+
+// Delete the cookie
+  if (location === "" || location === "undefined" || location === undefined) {
+    maxAge = -1;
+  }
+
+  /**
+  - Note when you run 'npm run start' locally, cookies won't be set, because locally process.env.NODE_ENV = 'production'
+  - so secure will be true, but it will still be http and not https , when tested locally.
+  - So when testing locally both in dev and prod, set the value of 'secure' to be false.
+  */
+  res.setHeader(
+    "Set-Cookie",
+    cookie.serialize("location", location, {
+      httpOnly: true,
+      secure: "development" !== process.env.NODE_ENV,
+      path: "/",
+      maxAge: maxAge,
+    })
+  );
+
+  // Only sending a message that successful, because we dont want to send JWT to client.
+  res.status(200).json({ success: location });
+}
+```
+
+`./src/utils/location`
+
+```js
+import axios from "axios";
+
+export const GetLocation = async () => {
+  return axios({
+    data: {},
+    method: "post",
+    url: "/api/get-location",
+  })
+    .then((data) => {
+      const { success } = data?.data ?? {};
+
+      if (success === "undefined" || success === "null" || success === "")
+        return undefined;
+      return success;
+    })
+    .catch(() => {
+      return false;
+    });
+};
+
+export const SetLocation = async (l) => {
+  return axios({
+    data: {
+      location: l,
+    },
+    method: "post",
+    url: "/api/set-location",
+  })
+    .then((data) => {
+      const { success } = data?.data ?? {};
+      return true;
+    })
+    .catch(() => {
+      return false;
+    });
+};
+```
+
+`./src/utils/cookies.js`
+
+```js
+import cookie from "cookie";
+
+export function parseCookies(req) {
+  return cookie.parse(req ? "" + req.headers.cookie : "");
+}
+
+export function getLocation(req) {
+  const cookies = parseCookies(req);
+  return cookies.location || "";
+}
+```
+
+**Note:** the following are only present for completeness but are infact unused:
+
+- `./src/utils/cookies.js` – I don't use this in this instance because can read the cookie using NextJS ‘getInitialProps' (given later in this article).
+- `./src/utils/location.js > GetLocation` – I don't use this for the same reason.
+
+### The way I get the cookie
+
+Replace the code for the root application. Note the addition of the cookies property and its passing to the location provider. The cookie is read using NextJS ‘getInitialProps'.
+
+**Note:** Feel free to remove Apollo, NProgress, and Router events.
+
+`./pages/_app.js`
+
+```js
+import { ApolloProvider } from "@apollo/client";
+import Router from "next/router";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
+
+import "../src/styles/index.scss";
+import client from "../src/apollo/client";
+import { LocationProvider } from "../src/contexts/location";
+
+NProgress.configure({ minimum: 0.1 });
+NProgress.configure({ trickleRate: 0.1, trickleSpeed: 400 });
+Router.events.on("routeChangeStart", () => NProgress.start());
+Router.events.on("routeChangeComplete", () => NProgress.done());
+Router.events.on("routeChangeError", () => NProgress.done());
+
+function MyApp({ Component, pageProps, cookies }) {
+  return (
+    <ApolloProvider client={client}>
+      <LocationProvider cookie={cookies.location}>
+        <Component {...pageProps} />
+      </LocationProvider>
+    </ApolloProvider>
+  );
+}
+
+export default MyApp;
+
+MyApp.getInitialProps = async (props) => {
+  const { ctx } = props;
+  return {
+    cookies: ctx.req.cookies,
+  };
+};
+```
+
+### Bringing it all together
+
+At this point everything is in place to save the application state to the context and a cookie and when the application starts the cookies are read and loaded into the context.
+
+### Reading and writing the state
+
+Now that we have the location context provider which exposes a react useState we can read and write it in much the same way as useState. When setting the location the context is updated and a cookie is also set.
+
+`./pages/index.js`
+
+```js
+...
+
+import { useLocationContext } from "../src/contexts/location";
+
+export default function Index({ data }) {
+
+...
+
+  const [location, setLocation] = useLocationContext();
+
+...
+
+  const \_setLocation = (l) => {
+    setLocation(l);
+  };
+
+  return (
+...
+
+    <p>Current location is: {location}</p>
+    <button onClick={() => SetLocation("x")}>Set location to x</button>
+
+...
+
+  )
+}
+```
+
+###### References
+
+- Method 3 in [this article](https://blog.bitsrc.io/3-effective-ways-to-implement-state-management-in-next-js-66d1b09f0b8b) provides more explanation about the provider.

@@ -1,0 +1,37 @@
+---
+title: "Test if email works on a PHP server"
+description: "If you’re unsure as to whether or not your PHP server is configured for sending email, then this simple script is for you."
+tags: ["php", "utility", "wordpress", "drupal"]
+created_at: "2018-12-21"
+updated_at: ""
+---
+
+If you’re unsure as to whether or not your PHP server is configured for sending email, then this simple script is for you.
+
+This script works for any PHP server, most notably Wordpress, Drupal or Joomla hosting services.
+
+## Create test-email.php
+
+File: `test-email.php`
+
+```php
+<?php
+  ini_set( 'display_errors', 1 );
+  error_reporting( E_ALL );
+  $from = "john@somedomain.com";
+  $to = "YOUREMAILADDRESS";
+  $subject = "PHP Mail Test script";
+  $message = "This is a test to check the PHP Mail functionality";
+  $headers = "From:" . $from;
+  mail($to,$subject, $message, $headers);
+  echo "Email test sent";
+?>
+```
+
+## Upload the file and test
+
+1. Place the file in your public_html folder or where ever the root of your site.
+2. Go to: somedomain.com/test-email.php
+3. Ensure you received the test email
+
+**Important:** Don’t forget to delete the file when you’re done testing, it’s publicly available.

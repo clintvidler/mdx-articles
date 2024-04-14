@@ -1,0 +1,54 @@
+---
+title: "Drupal Twig templates – enable debugging"
+description: "Enable Twig debugging in Drupal such that browser dev tools display Twig template responsibilities and overrides."
+tags: ["drupal", "drupal-theme"]
+created_at: "2020-06-27"
+updated_at: ""
+---
+
+Enable Twig debugging in Drupal such that browser dev tools display Twig template responsibilities and overrides.
+
+One of the first challenging things about Drupal theming is knowing which Twig templates are being used and where, and of course, how to override them. This article will show you how to switch on debugging so that this information is made available in the Browser element inspection tool.
+
+Achieving this requires the completion of three tasks:
+
+## 1. Edit settings file
+
+Scroll right to the bottom of “/root/sites/default/settings.php” and edit as below by uncommenting three lines.
+
+```php
+if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
+  include $app_root . '/' . $site_path . '/settings.local.php';
+}
+```
+
+## 2. Enable twig debugging
+
+Add the green lines as shown below into “/root/sites/development.services.yml”
+
+```yaml
+parameters:
+  http.response.debug_cacheability_headers: true
+  twig.config:
+    debug: true
+```
+
+## 3. Create settings.local file
+
+Copy “example.settings.local.php”
+from “/root/sites”
+to “/root/sites/default”
+and rename it to “settings.local.php”
+
+## Result
+
+Now that Twig debugging has been switched on you should see something like this.
+
+<CustomImage
+  src="https://raw.githubusercontent.com/clintvidler/mdx-articles/main/images/drupal-debugging-twig-result.png"
+  alt="result inspector"
+/>
+
+###### Related links
+
+https://www.drupal.org/docs/theming-drupal/twig-in-drupal/debugging-twig-templates

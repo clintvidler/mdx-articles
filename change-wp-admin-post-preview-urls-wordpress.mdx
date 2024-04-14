@@ -1,0 +1,30 @@
+---
+title: "Change Wordpress post preview URLs"
+description: "When creating a headless or decoupled Wordpress you may find that you want to display live previews on your chosen frontend."
+tags: ["wordpress", "headless-wordpress"]
+created_at: "2022-09-10"
+updated_at: ""
+---
+
+When creating a headless or decoupled Wordpress you may find that you want to display live previews on your chosen frontend.
+
+This code sample can be added to your theme or child theme's function.php file, or alternatively it may be put into a plugin.
+
+```php
+// Change preview url for posts
+add_filter( 'preview_post_link', 'func_preview_post_link', 10, 2 );
+function func_preview_post_link($preview_link, $post ) {
+// TODO: Read from URL definition in a theme option setting
+$frontendUrl = "http://localhost:3000/";
+$frontendRoute = "api/preview/";
+
+$postId = "?postId=" . $post->ID;
+$postType = "&postType=" . $post->post_type;
+
+return $frontendUrl . $frontendRoute . $postId . $postType;
+}
+```
+
+This method is better than a redirect to your frontend, it changes it within Wordpress.
+
+My [Change Wordpress wp-admin 'Visit site' URL](/posts/change-wp-admin-visit-site-url-wordpress) article may be if interest as well, if you're working with headless Wordpress.

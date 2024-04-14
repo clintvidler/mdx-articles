@@ -1,0 +1,120 @@
+---
+title: "How to setup ruTorrent Docker on a Synology NAS"
+description: "An easy to follow guide to setup ruTorrent, with a Docker container on a Synology NAS."
+tags: ["synology", "docker", "utility"]
+created_at: "2020-07-12"
+updated_at: ""
+---
+
+---
+
+An easy to follow guide to setup ruTorrent, with a Docker container on a Synology NAS.
+
+###### Requirements:
+
+- Docker is installed
+- SSH is enabled (don’t worry I explain how to later)
+
+## Why ruTorrent, not Deluge
+
+I tested both, and while Deluge has some nice features, it lacks some out of the box features I rely on, most notably search of torrents in the queue.
+
+## Preparation
+
+Before getting started with Docker let’s get some things prepared.
+
+### Create a docker user
+
+1. Control Panel -> User -> Create
+2. Username = docker
+3. Groups = users
+   No admin access
+4. Assign read and write permissions
+   docker, 'your download share'
+5. Deny all application permissions
+   These are not needed
+
+### Find your PUID and PGID
+
+To grant our Docker container the necessary permissions you will soon need your Personal User ID (PUID) and Personal Group ID (PGID). SSH to your Synology Diskstation to find the ID’s and make note of them for later:
+
+```bash
+# Look for docker:x:y - where x = PUID and y = GUID
+cut -d: -f1,3,4 /etc/passwd
+```
+
+[If you’re not sure how to SSH to your Synology check out the guide I wrote. It shows you how to enable SSH on your Synology and then how to connect.](/posts/ssh-synology-nas)
+
+**Why?**
+
+The Docker container will require the permission of a user account that can access target file shares. This is done by associating the correct Personal User ID and Personal Group ID with the container.
+
+## Docker container
+
+Connect to your Synology and run Docker.
+
+### Download from Registry
+
+1. Navigate to ‘Registry’ from the Docker side menu.
+   This is where your can download popular Docker containers, developed and maintained by one group or another. My preference is always the container by the ‘linuxserver’ team. They generally have good documentation and maintenance, as well as support via the forums.
+2. Search for ‘ruTorrent’.
+3. Download the ‘linuxserver’ offering of the latest version.
+   Latest version ensures the container can update to newly released versions.
+4. Select
+
+<CustomImage
+  src="https://raw.githubusercontent.com/clintvidler/mdx-articles/main/images/synology-docker-container-download-registry.png"
+  alt="Docker container download from registry"
+/>
+
+Docker container download from registry
+
+### Docker container setup
+
+Navigate to ‘Image’ from the Docker side menu and launch the ruTorrent image that you downloaded.
+
+Open **Advanced Settings**:
+
+Enable auto-restart
+
+**Add two volumes:** (you need to create these first in their relevant shares):
+
+- File/Folder: docker/rutorrent-1 | Mount path: /config
+- File/Folder: Downloads/rutorrent-1 | Mount path: /downloads
+
+#### Add ports:
+
+Where container port is 80, define a port for the local port. This will be be how you connect http://'NAS IP':'local port'
+
+#### Add Environment variables: (from TZ upward)
+
+Recall the PUID and GUID that you obtained earlier.
+
+<CustomImage
+  src="https://raw.githubusercontent.com/clintvidler/mdx-articles/main/images/synology-rutorrent-docker-environment-variables.png"
+  alt="rutorrent docker environment variables"
+/>
+
+Apply!
+
+## Summary
+
+The docker config lives in your docker shared folder, and the downloads will live in your Downloads shared folder.
+
+You can connect to the ruTorrent client via a web browser:
+
+http://'NAS-IP':'LOCAL-PORT'
+
+## Troubleshooting
+
+Torrents in the watched directory aren’t being loaded automatically. To fix this, SSH to your Synology NAS and edit the rtorrent.rc file.
+
+```bash
+# make sure to navigate to the root docker folder
+cd volume1/docker/rutorrent-1/
+
+# Edit the rtorrent.rc file
+$ vi rtorrent/rtorrent.rc
+```
+
+Remove the # in front of schedule to enable the line. Save the changes by typing ‘:wq’ and press enter.

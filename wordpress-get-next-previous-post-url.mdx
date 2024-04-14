@@ -1,0 +1,21 @@
+---
+title: "Wordpress get next/previous post URL"
+description: "This method works for WordPress posts as well as custom post types."
+tags: ["wordpress", "wordpress-theme"]
+created_at: "2019-05-16"
+updated_at: ""
+---
+
+This method works for Wordpress posts as well as custom post types.
+
+Use the following code inside of the Wordpress loop to extract the next and previous post links.
+
+```php
+$pp_url = get_permalink( get_previous_post()->ID );
+$np_url = get_permalink( get_next_post()->ID );
+```
+
+###### References
+
+[get_previous_post()](https://developer.wordpress.org/reference/functions/get_previous_post/)
+[get_next_post()](https://developer.wordpress.org/reference/functions/get_next_post/)

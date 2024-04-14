@@ -1,0 +1,83 @@
+---
+title: "Download YouTube audio/video in best quality"
+description: "Download YouTube videos or just the audio in the highest available quality."
+tags: ["utility"]
+created_at: "2020-11-04"
+updated_at: ""
+---
+
+Download Youtube videos in highest quality available.
+
+Install some required software:
+
+```bash
+# the downloader
+brew install youtube-dl
+
+# for merging audio and video
+brew install ffmpeg
+```
+
+**Note:** Homebrew is a package manager for Mac only, you’ll need to find an alternative method for installing these libraries if you’re on Windows or Linux.
+
+### Download audio and video to mp4
+
+```bash
+youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' 'the_url' --merge-output-format mp4
+```
+
+### Download audio only
+
+```bash
+youtube-dl -f 'bestaudio[ext=m4a]/bestaudio' --embed-thumbnail --add-metadata 'url'
+```
+
+### Downloads that require login
+
+Download age restricted or private videos that require you to be logged in to YouTube.
+
+Try adding your YouTube username and password to the command.
+
+```bash
+youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' -u 'your_email' -p 'your_password' 'the_url' --merge-output-format mp4
+```
+
+Alternatively (and more reliably), use your YouTube login cookie from the browser.
+
+1. Visit the YouTube you want to download (while logged in and able to view the video)
+2. Save the browser cookie to you files. Thirdparty extensions like “Get cookies.txt LOCALLY” may help.
+3. Add the flag `–cookies ‘yt-cookies.txt’` to your command (assuming you renamed the text file)
+
+Troubleshooting
+
+If you’re still receiving these error/s your cookies may have expired, export them again.
+
+Errors indicating that you need to do this:
+
+```bash
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+```
+
+```bash
+WARNING: Unable to look up account info: HTTP Error 400: Bad Request
+```
+
+```bash
+WARNING: unable to download video info webpage: HTTP Error 410: Gone
+ERROR: Sign in to confirm your age
+This video may be inappropriate for some users.
+```
+
+### More helpful and related utility
+
+Use FFmpeg to convert mp4 to m4a without transcode.
+
+```bash
+ffmpeg -i input.mp4 -map 0:a -c copy output.m4a
+```
+
+Bulk:
+
+```bash
+for file in *.mp4; do ffmpeg -i "$file" -vn -c:a copy "output/$(basename "$file" .mp4).m4a"; done
+```

@@ -1,0 +1,52 @@
+---
+title: "Live reloading Go with Docker Compose"
+description: "A very simple example using CompileDaemon and a Docker volume to live reload Go code, entering from the ./cmd folder."
+tags: ["golang", "docker", "docker-compose"]
+created_at: "2024-03-16"
+updated_at: "2024-03-22"
+---
+
+A very simple example using CompileDaemon and a Docker volume to live reload Go code, entering from the ./cmd folder.
+
+All of the many, many, articles/videos I found on the internet were demonstrating how to live reload with the main.go file in the project root. Moving the main.go into the ./cmd folder was easy enough to do without a Docker volume, but introducing the Docker volume messed up the structure and overwrote code. In the end the solution was very simple, but discovering it had many twists and turns. Here it is, for anybody else facing the same challenge.
+
+`./cmd/main.go`
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello!")
+}
+```
+
+`./Dockerfile`
+
+```bash
+FROM golang:latest
+
+RUN mkdir /app
+WORKDIR /app
+ADD . /app
+
+RUN go get github.com/githubnemo/CompileDaemon
+RUN go install github.com/githubnemo/CompileDaemon
+
+ENTRYPOINT CompileDaemon --build="go build -o tmp/main cmd/main.go" --command=./tmp/main
+```
+
+`./docker-compose.yaml`
+
+```yaml
+version: "3"
+services:
+  app:
+    build: .
+    container_name: hot-reload-example
+    volumes:
+      - ./:/app
+```
+
+[GitHub](https://github.com/clintvidler/go-docker-live-reload)

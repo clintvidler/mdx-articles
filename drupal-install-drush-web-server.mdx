@@ -1,0 +1,58 @@
+---
+title: "Install Drush for Drupal on a CPanel web server"
+description: "This proved much more difficult than it should have been, so I wrote this article."
+tags: ["drupal", "drush", "cpanel"]
+created_at: "2020-07-20"
+updated_at: ""
+---
+
+This proved much more difficult than it should have been, so I wrote this article.
+
+```bash
+$ drush --version
+```
+
+## Install Drush globally
+
+The after installing Drush 10, the “Drush version” command would work anywhere except inside a Drupal instance, useless I know. I kept getting this error whenever I ran “drush xxx”, “[warning] Drush command terminated abnormally.”. I eventually I removed Drush 10 and installed Drush 9, problem solved.
+
+```bash
+composer global require drush/drush:9.x
+```
+
+Add path to '.bash_profile'
+
+```bash
+# edit .bash_profile
+$ nano ~/.bash_profile
+
+# add this line
+PATH=$HOME/.config/composer/vendor/bin:$PATH
+
+# use newly modified .bash_profile
+$ source ~/.bash_profile
+```
+
+## Update Drush globally
+
+```bash
+$ composer global update drush/drush
+```
+
+## Uninstall Drush
+
+Maybe you will need this too.
+
+```bash
+$ composer global remove drush/drush
+```
+
+Alternate command:
+
+```bash
+composer require drush/drush
+```
+
+###### Troubleshooting
+
+`Error: “[warning] Drush command terminated abnormally.”`. Was fixed by changing to a different version of Drush.

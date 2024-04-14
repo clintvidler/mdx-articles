@@ -1,0 +1,72 @@
+---
+title: "Install NodeJS and NPM on a shared CPanel web server"
+description: "NodeJS can be installed on you CPanel shared hosting plans, keep reading to see how."
+tags: ["nodejs", "devops", "cpanel"]
+created_at: "2020-07-20"
+updated_at: ""
+---
+
+NodeJS can be installed on you CPanel shared hosting plans, keep reading to see how.
+
+```bash
+npm --version
+```
+
+## NodeJS download
+
+Visit [https://nodejs.org/en/download/current/](https://nodejs.org/en/download/current/) and copy the link to Linux 64-bit binary.
+
+Connect to your web host via SSH, read [this article](/posts/ssh-to-webserver) if you’re not sure how.
+
+Download the binaries to your home directory on the web server.
+
+```bash
+$ cd ~
+$ wget https://nodejs.org/dist/v14.5.0/node-v14.5.0-linux-x64.tar.xz
+```
+
+## Extract NodeJS
+
+```bash
+tar xvf node-v14.5.0-linux-x64.tar.xz
+```
+
+If your web server doesn’t have have the tools to handle .xz files, as indicated by the error below. You can look at installing xz-utils with apt-get. If your web server doesn’t have apt-get available, try the work around below.
+
+```bash
+tar (child): xz: Cannot exec: No such file or directory
+tar (child): Error is not recoverable: exiting now
+tar: Child returned status 2
+tar: Error is not recoverable: exiting now
+Code language: JavaScript (javascript)
+```
+
+**Workaround** (only if you can’t extract .xz files):
+
+1. Download the binaries to your local machine
+2. Extract to a folder
+3. Compress the folder using .zip or something else the web server will handle
+4. Upload the compressed file to the web server home directory
+5. Uncompress $ unzip 'filename'.zip
+
+## Install/Configure NodeJS
+
+Now that you’ve downloaded the Linux binaries and extracted them into the home directory. Rename the extracted folder to something more friendly, such as “nodejs”.
+
+```bash
+mv node-v14.5.0-linux-x64 nodejs
+```
+
+```bash
+mkdir ~/bin
+cp nodejs/bin/node ~/bin
+cd ~/bin
+ln -s ../nodejs/lib/node_modules/npm/bin/npm-cli.js npm
+```
+
+Now verify everything is working.
+
+```bash
+node --version
+npm --version
+```

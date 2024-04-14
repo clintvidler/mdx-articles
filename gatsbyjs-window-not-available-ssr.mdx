@@ -1,0 +1,61 @@
+---
+title: "Gatsby ‘window.location’ not available during SSR"
+description: "Description"
+tags: ["gatsbyjs", "reactjs", "ssr"]
+created_at: "2020-07-24"
+updated_at: ""
+---
+
+The location parameter works via ‘gatsby develop’, but fails to compile via ‘gatsby build’.
+
+## Solution
+
+Place this at the top of your component and use pathname directly.
+
+```js
+let pathname = typeof window !== "undefined" ? window.location.pathname : "";
+```
+
+## Errors:
+
+Gatsby error messages
+
+```bash
+failed Building static HTML for pages - 4.279s
+
+"location" is not available during server side rendering.
+
+See our docs page for more info on this error: https://gatsby.dev/debug-html
+
+  WebpackError: ReferenceError: location is not defined
+
+  - build-html.js:110 doBuildPages
+    [cubic_gatsby]/[gatsby]/dist/commands/build-html.js:110:24
+
+  - build-html.js:124 async buildHTML
+    [cubic_gatsby]/[gatsby]/dist/commands/build-html.js:124:3
+
+  - build.js:200 async build
+    [cubic_gatsby]/[gatsby]/dist/commands/build.js:200:5
+```
+
+or
+
+```bash
+failed Building static HTML for pages - 4.279s
+
+"window" is not available during server side rendering.
+
+See our docs page for more info on this error: https://gatsby.dev/debug-html
+
+  WebpackError: ReferenceError: location is not defined
+
+  - build-html.js:110 doBuildPages
+    [cubic_gatsby]/[gatsby]/dist/commands/build-html.js:110:24
+
+  - build-html.js:124 async buildHTML
+    [cubic_gatsby]/[gatsby]/dist/commands/build-html.js:124:3
+
+  - build.js:200 async build
+    [cubic_gatsby]/[gatsby]/dist/commands/build.js:200:5
+```
